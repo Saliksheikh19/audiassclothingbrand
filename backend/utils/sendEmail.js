@@ -1,48 +1,27 @@
-const nodemailer = require('nodemailer');
-const dns = require('dns');
-const util = require('util');
-const resolve4 = util.promisify(dns.resolve4);
+const { Resend } = require('resend');
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async (options) => {
-    // 1. Resolve IPv4 address explicitly to bypass IPv6 issues on Render
-    let smtpHost = 'smtp.gmail.com';
     try {
-        const addresses = await resolve4('smtp.gmail.com');
-        if (addresses && addresses.length > 0) {
-            smtpHost = addresses[0];
-            console.log(`Resolved smtp.gmail.com to IPv4: ${smtpHost}`);
+        const { data, error } = await resend.emails.send({
+            from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
+            to: [options.email],
+            subject: options.subject,
+            html: options.message
+        });
+
+        if (error) {
+            console.error('Resend Error:', error);
+            throw new Error(error.message);
         }
+
+        console.log('Email sent successfully:', data);
+        return data;
     } catch (error) {
-        console.error('Failed to resolve IPv4 for smtp.gmail.com, using fallback:', error);
+        console.error('Email sending failed:', error);
+        throw error;
     }
-
-    // 2. Create a transporter using the resolved IP
-    const transporter = nodemailer.createTransport({
-        host: smtpHost,
-        port: 465,
-        secure: true, // use SSL
-        auth: {
-            user: process.env.SMTP_EMAIL,
-            pass: process.env.SMTP_PASSWORD
-        },
-        tls: {
-            rejectUnauthorized: false,
-            servername: 'smtp.gmail.com' // Essential: Validate cert against the domain
-        },
-        connectionTimeout: 10000, // 10 seconds timeout
-        greetingTimeout: 5000 // 5 seconds greeting timeout
-    });
-
-    // 2. Define the email options
-    const mailOptions = {
-        from: `"${process.env.FROM_NAME}" <${process.env.FROM_EMAIL}>`,
-        to: options.email,
-        subject: options.subject,
-        html: options.message
-    };
-
-    // 3. Actually send the email
-    await transporter.sendMail(mailOptions);
 };
 
 module.exports = sendEmail;
