@@ -7,13 +7,16 @@ const sendEmail = async (options) => {
 
     // For Gmail, enable 'App Passwords' in your Google Account security settings.
     const transporter = nodemailer.createTransport({
-        service: 'gmail', // or use 'host' and 'port' from env if not Gmail
-        host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT,
+        service: process.env.SMTP_SERVICE || 'gmail',
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: process.env.SMTP_PORT || 587,
         secure: false, // true for 465, false for other ports
         auth: {
             user: process.env.SMTP_EMAIL,
             pass: process.env.SMTP_PASSWORD
+        },
+        tls: {
+            rejectUnauthorized: false
         }
     });
 
