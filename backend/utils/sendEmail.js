@@ -11,16 +11,19 @@ const sendEmail = async (options) => {
     // https://ethereal.email/ for testing or use Gmail, SendGrid, etc.
 
     // For Gmail, enable 'App Passwords' in your Google Account security settings.
-    // For Gmail, enable 'App Passwords' in your Google Account security settings.
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: 'smtp.gmail.com', // Explicit host
+        port: 587, // Standard TLS port
+        secure: false, // true for 465, false for other ports
         auth: {
             user: process.env.SMTP_EMAIL,
             pass: process.env.SMTP_PASSWORD
         },
         tls: {
             rejectUnauthorized: false
-        }
+        },
+        // Force IPv4 is critical here for Render
+        family: 4
     });
 
     // 2. Define the email options
