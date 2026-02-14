@@ -2,7 +2,15 @@
     "rewrites": [
         {
             "source": "/api/:path*",
-            "destination": "https://audiassclothingbrand.onrender.com/"
+            "destination": "https://audiassclothingbrand.onrender.com/api/:path*"
+        },
+        {
+            "source": "/kashan/:path*",
+            "destination": "/index.html"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
         }
     ]
 }
