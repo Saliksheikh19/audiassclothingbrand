@@ -1,4 +1,9 @@
 const nodemailer = require('nodemailer');
+const dns = require('dns');
+// Force IPv4 for DNS resolution to avoid IPv6 connection issues on some environments
+if (dns.setDefaultResultOrder) {
+    dns.setDefaultResultOrder('ipv4first');
+}
 
 const sendEmail = async (options) => {
     // 1. Create a transporter
@@ -8,7 +13,7 @@ const sendEmail = async (options) => {
     // For Gmail, enable 'App Passwords' in your Google Account security settings.
     const transporter = nodemailer.createTransport({
         host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: process.env.SMTP_PORT || 587,
+        port: process.env.SMTP_PORT || 465,
         secure: process.env.SMTP_PORT == 465, // true for 465, false for other ports
         auth: {
             user: process.env.SMTP_EMAIL,

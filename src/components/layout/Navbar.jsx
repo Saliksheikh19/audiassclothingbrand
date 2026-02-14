@@ -74,12 +74,12 @@ const Navbar = () => {
                         </nav>
 
                         {/* Right Icons */}
-                        <div className="flex items-center justify-end gap-6 text-sm">
+                        <div className="flex items-center justify-end gap-3 lg:gap-6 text-sm flex-shrink-0">
                             <button className="hidden lg:block">
                                 <Search className={`w-5 h-5 ${textColor}`} />
                             </button>
 
-                            <Link to="/wishlist" className="hidden lg:block relative">
+                            <Link to="/wishlist" className="relative">
                                 <Heart className={`w-5 h-5 ${textColor}`} />
                                 {wishlist.length > 0 && (
                                     <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
@@ -169,6 +169,24 @@ const Navbar = () => {
                                     </Link>
                                 </div>
                             ))}
+                            <div className="pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+                                <Link
+                                    to="/wishlist"
+                                    className="text-lg font-semibold uppercase tracking-wider flex items-center gap-2"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    Wishlist ({wishlist.length})
+                                </Link>
+                            </div>
+                            <div className="pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+                                <Link
+                                    to="/cart"
+                                    className="text-lg font-semibold uppercase tracking-wider flex items-center gap-2"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    Cart ({cartCount})
+                                </Link>
+                            </div>
                         </nav>
                     </div>
 
