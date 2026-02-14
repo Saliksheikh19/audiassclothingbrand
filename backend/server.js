@@ -1,3 +1,13 @@
+const dns = require('dns');
+// Force IPv4 for DNS resolution to avoid IPv6 connection issues on some environments (like Render)
+if (dns && dns.setDefaultResultOrder) {
+    try {
+        dns.setDefaultResultOrder('ipv4first');
+        console.log('DNS resolution forced to IPv4');
+    } catch (error) {
+        console.error('Failed to set DNS result order:', error);
+    }
+}
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
