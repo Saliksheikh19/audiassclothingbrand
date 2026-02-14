@@ -5,6 +5,10 @@
             "destination": "https://audiassclothingbrand.onrender.com/api/:path*"
         },
         {
+            "source": "/uploads/:path*",
+            "destination": "https://audiassclothingbrand.onrender.com/uploads/:path*"
+        },
+        {
             "source": "/kashan/:path*",
             "destination": "/index.html"
         },
