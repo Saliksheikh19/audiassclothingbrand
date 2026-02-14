@@ -19,16 +19,18 @@ const sendEmail = async (options) => {
     // 2. Create a transporter using the resolved IP
     const transporter = nodemailer.createTransport({
         host: smtpHost,
-        port: 587,
-        secure: false, // use STARTTLS
+        port: 465,
+        secure: true, // use SSL
         auth: {
             user: process.env.SMTP_EMAIL,
             pass: process.env.SMTP_PASSWORD
         },
         tls: {
             rejectUnauthorized: false,
-            servername: 'smtp.gmail.com' // Essential: Validate cert against the domain, not the IP
-        }
+            servername: 'smtp.gmail.com' // Essential: Validate cert against the domain
+        },
+        connectionTimeout: 10000, // 10 seconds timeout
+        greetingTimeout: 5000 // 5 seconds greeting timeout
     });
 
     // 2. Define the email options
