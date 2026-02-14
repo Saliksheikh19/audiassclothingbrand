@@ -1,24 +1,34 @@
 const nodemailer = require('nodemailer');
 const dns = require('dns');
-// Force IPv4 for DNS resolution to avoid IPv6 connection issues on some environments
-if (dns.setDefaultResultOrder) {
-    dns.setDefaultResultOrder('ipv4first');
-}
+const util = require('util');
+const resolve4 = util.promisify(dns.resolve4);
 
 const sendEmail = async (options) => {
-    // 1. Create a transporter
-    // Looking to send emails in production? check out our Email Service: 
-    // https://ethereal.email/ for testing or use Gmail, SendGrid, etc.
+    // 1. Resolve IPv4 address explicitly to bypass IPv6 issues on Render
+    let smtpHost = 'smtp.gmail.com';
+    try {
+        const addresses = await resolve4('smtp.gmail.com');
+        if (addresses && addresses.length > 0) {
+            smtpHost = addresses[0];
+            console.log(`Resolved smtp.gmail.com to IPv4: ${smtpHost}`);
+        }
+    } catch (error) {
+        console.error('Failed to resolve IPv4 for smtp.gmail.com, using fallback:', error);
+    }
 
-    // For Gmail, enable 'App Passwords' in your Google Account security settings.
+    // 2. Create a transporter using the resolved IP
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: smtpHost,
+        port: 587,
+        secure: false, // use STARTTLS
         auth: {
             user: process.env.SMTP_EMAIL,
             pass: process.env.SMTP_PASSWORD
         },
-        // Force IPv4 is critical here for Render
-        family: 4
+        tls: {
+            rejectUnauthorized: false,
+            servername: 'smtp.gmail.com' // Essential: Validate cert against the domain, not the IP
+        }
     });
 
     // 2. Define the email options
